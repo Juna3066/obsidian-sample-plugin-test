@@ -54,7 +54,7 @@ export default class MyPlugin extends Plugin {
 			// Our view could not be found in the workspace, create a new leaf
 			// in the right sidebar for it
 			leaf = workspace.getRightLeaf(false);
-			if(leaf === null){
+			if (leaf === null) {
 				return;
 			}
 			await leaf.setViewState({ type: VIEW_TYPE_EXAMPLE, active: true });
@@ -76,6 +76,11 @@ export default class MyPlugin extends Plugin {
 	async onload() {
 		console.log('加载插件');
 
+		this.addRibbonIcon('rows-3', 'Print leaf types', () => {
+			this.app.workspace.iterateAllLeaves((leaf) => {
+				console.log(leaf.getViewState().type);
+			});
+		});
 
 		this.registerView(
 			VIEW_TYPE_EXAMPLE,
