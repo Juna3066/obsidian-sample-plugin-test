@@ -6,6 +6,12 @@ import { ExampleSettingTab } from './settings';
 import { ExampleView, VIEW_TYPE_EXAMPLE } from 'view';
 
 
+const ALL_EMOJIS: Record<string, string> = {
+	':+1:': '👍',
+	':sunglasses:': '😎',
+	':smile:': '😄',
+};
+
 // Remember to rename these classes and interfaces!
 /**
  * 向插件添加设置的主要原因是存储即使用户退出 Obsidian 后仍会保留的配置
@@ -76,6 +82,18 @@ export default class MyPlugin extends Plugin {
 	 */
 	async onload() {
 		console.log('加载插件');
+
+		/**
+		 * 要更改 Markdown 文档在阅读视图中的呈现方式，可以添加自己的Markdown 后处理器
+		 * 
+		 * 找包含两个冒号之间的文本的任何代码块:，并将其替换为适当的表情符号 
+		 */
+		this.mdPostDemo();
+
+		/**
+		 *  CSV 数据的代码块呈现为表格
+		 */
+		this.mdPostDemo2();
 
 		this.addRibbonIcon('rows-3', 'Print leaf types', () => {
 			this.app.workspace.iterateAllLeaves((leaf) => {
@@ -166,16 +184,16 @@ export default class MyPlugin extends Plugin {
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const select = editor.getSelection().trim();
 				console.log(select);
-				if(select){
+				if (select) {
 					//todo 需要理解
 					editor.replaceSelection(select.toUpperCase());
 					return;
-				}		
+				}
 				/* 
 				replaceRange ()方法替换两个光标位置之间的文本。
 				如果您只指定一个位置，它会在该位置和下一个位置之间插入新文本。
-				*/		
-				editor.replaceRange(moment().format('YYYY-MM-DD') ,editor.getCursor())
+				*/
+				editor.replaceRange(moment().format('YYYY-MM-DD'), editor.getCursor())
 
 			}
 		});
@@ -401,6 +419,42 @@ export default class MyPlugin extends Plugin {
 	}
 
 
+
+	private mdPostDemo2() {
+		this.registerMarkdownCodeBlockProcessor('csv', (source, el, ctx) => {
+			const rows = source.split('\n').filter((row) => row.length > 0);
+
+			const table = el.createEl('table');
+			const body = table.createEl('tbody');
+
+			for (let i = 0; i < rows.length; i++) {
+				const cols = rows[i].split(',');
+
+				const row = body.createEl('tr');
+
+				for (let j = 0; j < cols.length; j++) {
+					row.createEl('td', { text: cols[j] });
+				}
+			}
+		});
+	}
+
+	private mdPostDemo() {
+		this.registerMarkdownPostProcessor((element, context) => {
+			const codeblocks = element.findAll('code');
+			console.log(codeblocks.length);
+			//此处let const那个好，为什么
+			for (const codeblock of codeblocks) {
+				const text = codeblock.innerText.trim();
+				if (text[0] === ':' && text[text.length - 1] === ':') {
+					const emojiEl = codeblock.createSpan({
+						text: ALL_EMOJIS[text] ?? text,
+					});
+					codeblock.replaceWith(emojiEl);
+				}
+			}
+		});
+	}
 
 	//释放插件需要的资源；插件禁止时运行
 	onunload() {
