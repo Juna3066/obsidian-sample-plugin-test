@@ -34,6 +34,7 @@ const DEFAULT_SETTINGS: Partial<MyPluginSettings> = {
 export default class MyPlugin extends Plugin {
 	// 添加插件设置步骤1 -定义配置内容
 	settings: MyPluginSettings;
+	statusBar: HTMLElement;
 
 	onCreate() {
 		if (!this.app.workspace.layoutReady) {
@@ -82,6 +83,19 @@ export default class MyPlugin extends Plugin {
 	 */
 	async onload() {
 		console.log('加载插件');
+
+		this.registerEvent(this.app.vault.on('create', () => {
+			console.log('a new file has entered the arena')
+		}));
+
+
+		this.statusBar = this.addStatusBarItem();
+
+		this.updateStatusBar();
+
+		this.registerInterval(
+			window.setInterval(() => this.updateStatusBar(), 1000)
+		);
 
 		/**
 		 * 要更改 Markdown 文档在阅读视图中的呈现方式，可以添加自己的Markdown 后处理器
@@ -416,6 +430,9 @@ export default class MyPlugin extends Plugin {
 			})
 		);
 
+	}
+	updateStatusBar() {
+		this.statusBar.setText(moment().format('H:mm:ss'));
 	}
 
 
