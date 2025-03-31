@@ -52,7 +52,7 @@ export default class MyPlugin extends Plugin {
 		// 添加插件设置步骤3 -插件加载时候 调用
 		await this.loadSettings();
 		this.addSettingTab(new ExampleSettingTab(this.app, this));
-  
+
 
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
@@ -72,6 +72,22 @@ export default class MyPlugin extends Plugin {
 		const item = this.addStatusBarItem();
 		setIcon(item, 'smile');
 
+		/**
+		 * 要在状态栏中创建新块，onload()中调用
+		 * addStatusBarItem()方法
+		 * 
+		 * 它返回一个HTML 元素，您可以向其中添加自己的元素。
+		 */
+		const item2 = this.addStatusBarItem();
+		item2.createEl('span', { text: 'Hello from the status bar 👋' });
+
+		const fruits = this.addStatusBarItem();
+		fruits.createEl('span', { text: '🍎' });
+		fruits.createEl('span', { text: '🍌' });
+
+		const veggies = this.addStatusBarItem();
+		veggies.createEl('span', { text: '🥦' });
+		veggies.createEl('span', { text: '🥬' });
 
 		/**
 		 * Obsidian 界面左侧的侧边栏主要被称为功能区
