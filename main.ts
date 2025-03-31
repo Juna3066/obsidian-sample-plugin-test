@@ -87,6 +87,12 @@ export default class MyPlugin extends Plugin {
 		this.registerEvent(this.app.vault.on('create', () => {
 			console.log('a new file has entered the arena')
 		}));
+		this.registerEvent(this.app.vault.on('delete', () => {
+			console.log('file delete')
+		}));
+		this.registerEvent(this.app.vault.on('modify', () => {
+			console.log('file modify')
+		}));
 
 
 		this.statusBar = this.addStatusBarItem();
