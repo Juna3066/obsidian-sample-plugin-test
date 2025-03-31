@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, Menu, setIcon, addIcon, WorkspaceLeaf } from 'obsidian';
+import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, Menu, setIcon, addIcon, WorkspaceLeaf, TFile, TFolder, Vault } from 'obsidian';
 import { moment } from 'obsidian';
 import { ExampleModal } from './modal';
 import { ExampleModal2, ExampleModal3 } from 'modal/ExampleModal2';
@@ -181,6 +181,8 @@ export default class MyPlugin extends Plugin {
 		addIcon('circle', `<circle cx="50" cy="50" r="50" fill="currentColor" />`);
 		this.addRibbonIcon('circle', 'Click me', () => {
 			console.log('Hello, you!');
+
+			this.printMdPath();
 		});
 
 		// This adds a simple command that can be triggered anywhere
@@ -310,6 +312,11 @@ export default class MyPlugin extends Plugin {
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				const sel = editor.getSelection()
 				console.log(`You have selected: ${sel}`);
+				//使用writeCurrentDate修改当前文档内容 todo 补全参数
+				if (view.file) {
+					//writeCurrentDate(this.app.vault, view.file);
+					emojify(this.app.vault, view.file);
+				}
 			},
 		});
 
@@ -430,7 +437,58 @@ export default class MyPlugin extends Plugin {
 			})
 		);
 
+
+		this.addRibbonIcon('info', 'Calculate average file length', async () => {
+			const fileLength = await this.averageFileLength();
+			new Notice(`The average file length is ${fileLength} characters.`);
+		});
+
 	}
+
+
+
+	async averageFileLength(): Promise<number> {
+		const { vault } = this.app;
+
+		const fileContents: string[] = await Promise.all(
+			vault.getMarkdownFiles().map((file) => vault.cachedRead(file))
+		);
+
+		let totalLength = 0;
+		fileContents.forEach((content) => {
+			totalLength += content.length;
+		});
+
+		return totalLength / fileContents.length;
+	}
+
+	private printMdPath() {
+		// const files = this.app.vault.getMarkdownFiles();
+		const files = this.app.vault.getFiles();
+
+		for (let i = 0; i < files.length; i++) {
+			const path = files[i].path;
+			console.log(path);
+			if (this.FileNotFolder(path) && path.contains('to-delete')) {
+				console.log('delete', path);
+				this.app.vault.delete(files[i]);
+				// this.app.vault.trash(files[i],true);
+			}
+		}
+	}
+
+	private FileNotFolder(path: string): boolean {
+		const folderOrFile = this.app.vault.getAbstractFileByPath(path);
+		let f = true;
+		if (folderOrFile instanceof TFile) {
+			console.log('It\'s a file!');
+		} else if (folderOrFile instanceof TFolder) {
+			console.log('It\'s a folder!');
+			f = false;
+		}
+		return f;
+	}
+
 	updateStatusBar() {
 		this.statusBar.setText(moment().format('H:mm:ss'));
 	}
@@ -488,6 +546,9 @@ export default class MyPlugin extends Plugin {
 		console.log('保存设置', this.settings);
 		await this.saveData(this.settings);
 	}
+
+
+
 }
 
 class SampleModal extends Modal {
@@ -564,4 +625,15 @@ function getRequiredValue2(editor: Editor) {
 	const sel = editor.getSelection()
 	console.log(`You have selected: ${sel}`);
 	return sel;
+}
+
+function writeCurrentDate(vault: Vault, file: TFile): Promise<void> {
+	return vault.modify(file, `Today is ${new Intl.DateTimeFormat().format(new Date())}.`);
+}
+
+// emojify replaces all occurrences of :) with 🙂.
+function emojify(vault: Vault, file: TFile): Promise<string> {
+	return vault.process(file, (data) => {
+		return data.replace(/:\)/g, '🙂');
+	})
 }
