@@ -59,6 +59,18 @@ export default class MyPlugin extends Plugin {
 		const item = this.addStatusBarItem();
 		setIcon(item, 'smile');
 
+
+		/**
+		 * Obsidian 界面左侧的侧边栏主要被称为功能区
+		 * 目的是托管插件定义的操作。
+		 * 要向功能区添加操作，请使用addRibbonIcon()方法
+		 * 
+		 * 用户可以从功能区中删除插件的图标，甚至可以选择完全隐藏功能区。
+		 * 因此，建议包含访问功能区中功能的替代方法，
+		 * 
+		 * 例如创建命令
+		 * 
+		 */
 		// 添加自己的图标 您的图标需要适合0 0 100 100视图框才能正确绘制
 		addIcon('circle', `<circle cx="50" cy="50" r="50" fill="currentColor" />`);
 		this.addRibbonIcon('circle', 'Click me', () => {
