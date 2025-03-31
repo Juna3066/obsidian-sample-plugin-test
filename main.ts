@@ -1,4 +1,6 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, Menu, setIcon, addIcon } from 'obsidian';
+import { ExampleModal } from './modal';
+import { ExampleModal2, ExampleModal3 } from 'modal/ExampleModal2';
 
 // Remember to rename these classes and interfaces!
 
@@ -208,6 +210,33 @@ export default class MyPlugin extends Plugin {
 			},
 		});
 
+		this.addCommand({
+			id: 'my-modal',
+			name: 'my modal 模态框',
+			callback: () => {
+				//new ExampleModal(this.app).open();
+				new ExampleModal(this.app,(result)=>{
+					new Notice(`hello,${result}`);
+				}).open();
+			},
+		});
+		this.addCommand({
+			id: 'my-choose-modal',
+			name: 'my choose modal 模态框',
+			callback: () => {
+				//new ExampleModal(this.app).open();
+				new ExampleModal2(this.app).open();
+			},
+		});
+		this.addCommand({
+			id: 'my-choose-modal2',
+			name: 'my choose modal 模态框2',
+			callback: () => {
+				//new ExampleModal(this.app).open();
+				new ExampleModal3(this.app).open();
+			},
+		});
+
 		/**
 		 * 上下文菜单
 		 * 
@@ -265,15 +294,12 @@ export default class MyPlugin extends Plugin {
 						.setTitle('Print file path 👈')
 						.setIcon('document')
 						.onClick(async () => {
-							new Notice(view.file.path);
-							console.log(view.file.parent);
+							new Notice(view.file ? view.file.path : "default");
+							console.log(view.file ? view.file.parent : "default");
 						});
 				});
 			})
 		);
-
-
-
 
 	}
 
@@ -308,6 +334,8 @@ class SampleModal extends Modal {
 		contentEl.empty();
 	}
 }
+
+
 
 class SampleSettingTab extends PluginSettingTab {
 	plugin: MyPlugin;
