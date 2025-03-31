@@ -10,11 +10,32 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 	mySetting: 'default'
 }
 
+//Plugin类定义插件的生命周期并公开所有插件可用的操作
 export default class MyPlugin extends Plugin {
 	settings: MyPluginSettings;
 
+	onCreate() {
+		if (!this.app.workspace.layoutReady) {
+			console.log('工作空间还在加载');
+			return;
+		}
+		console.log('布局就绪')
+	}
+	
+	/**
+	 * 加载插件需要的资源；此处配置插件的大部分功能
+	 * 
+	 * onload函数应仅包含插件初始化所需的代码。
+	 * 这包括应用程序注册，
+	 * 例如注册命令、视图类型和 Markdown 后处理器。
+	 * 
+	 * 它不应包含任何耗时的操作或数据获取。
+	 */
 	async onload() {
-		
+		console.log('加载插件');
+
+		this.registerEvent(this.app.vault.on('create', this.onCreate, this));
+
 		await this.loadSettings();
 	
 
@@ -86,8 +107,9 @@ export default class MyPlugin extends Plugin {
 		});
 	}
 
+	//释放插件需要的资源；插件禁止时运行
 	onunload() {
-
+		console.log('释放插件');
 	}
 
 	async loadSettings() {
