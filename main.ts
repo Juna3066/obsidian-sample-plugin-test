@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, Menu } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
@@ -116,7 +116,8 @@ export default class MyPlugin extends Plugin {
 			id: 'cmd-hello',
 			name: 'cmd-hi',
 			callback: () => {
-				console.log('你好，俊宝');
+				//cmd窗口运行npm run dev 同时obsidian安装了hot-reload插件 改变main.ts  main.js会自动更新 
+				console.log('你好，俊宝222，333');
 			},
 		});
 
@@ -194,6 +195,70 @@ export default class MyPlugin extends Plugin {
 				console.log('mod shift q 你好');
 			},
 		});
+
+		/**
+		 * 上下文菜单
+		 * 
+		 */
+		this.addRibbonIcon('square-menu', 'Open menu', (event) => {
+			const menu = new Menu();
+
+			menu.addItem((item) =>
+				item
+					.setTitle('Copy')
+					.setIcon('documents')
+					.onClick(() => {
+						new Notice('Copied');
+					})
+			);
+
+			menu.addItem((item) =>
+				item
+					.setTitle('Paste')
+					.setIcon('paste')
+					.onClick(() => {
+						new Notice('Pasted');
+					})
+			);
+
+			//打开您用鼠标单击的菜单
+			//menu.showAtMouseEvent(event);
+			//x 做到右 y 上到下
+			menu.showAtPosition({ x: 200, y: 100 })
+		});
+
+		/**
+		 * 通过订阅file-menu和editor-menu工作区事件
+		 * 将项目添加到 文件菜单 或 编辑器菜单
+		 */
+		this.registerEvent(
+			this.app.workspace.on('file-menu', (menu, file) => {
+				menu.addItem((item) => {
+					item
+						.setTitle('Print file path 👈')
+						.setIcon('document')
+						.onClick(async () => {
+							new Notice(file.path);
+							//文件路径
+							console.log(file.path);
+						});
+				});
+			})
+		);
+
+		this.registerEvent(
+			this.app.workspace.on("editor-menu", (menu, editor, view) => {
+				menu.addItem((item) => {
+					item
+						.setTitle('Print file path 👈')
+						.setIcon('document')
+						.onClick(async () => {
+							new Notice(view.file.path);
+							console.log(view.file.parent);
+						});
+				});
+			})
+		);
 
 	}
 
