@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, Menu } from 'obsidian';
+import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, Menu, setIcon, addIcon } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
@@ -49,7 +49,19 @@ export default class MyPlugin extends Plugin {
 
 		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
 		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status Bar Text');
+		statusBarItemEl.setText('Status Bar Text 2x');
+		//图标覆盖上文字
+		setIcon(statusBarItemEl, 'piggy-bank')
+
+		//状态栏 添加图标2
+		const item = this.addStatusBarItem();
+		setIcon(item, 'smile');
+
+		// 添加自己的图标 您的图标需要适合0 0 100 100视图框才能正确绘制
+		addIcon('circle', `<circle cx="50" cy="50" r="50" fill="currentColor" />`);
+		this.addRibbonIcon('circle', 'Click me', () => {
+			console.log('Hello, you!');
+		});
 
 		// This adds a simple command that can be triggered anywhere
 		this.addCommand({
@@ -259,6 +271,9 @@ export default class MyPlugin extends Plugin {
 				});
 			})
 		);
+
+
+
 
 	}
 

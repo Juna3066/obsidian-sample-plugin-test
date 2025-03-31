@@ -29,3 +29,8 @@ If your plugin does not need CSS, delete this file.
     padding: 10px;
     margin-bottom: 10px;
 }
+
+/* 图标大小 */
+div {
+    --icon-size: var(--icon-size-m);
+}
