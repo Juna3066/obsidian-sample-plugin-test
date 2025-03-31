@@ -14,7 +14,9 @@ export default class MyPlugin extends Plugin {
 	settings: MyPluginSettings;
 
 	async onload() {
+		
 		await this.loadSettings();
+	
 
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
@@ -76,6 +78,12 @@ export default class MyPlugin extends Plugin {
 
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+
+
+		this.addRibbonIcon('dice', '功能栏-图标标题', (evt: MouseEvent) => {
+			// Called when the user clicks the icon.
+			new Notice('通知');
+		});
 	}
 
 	onunload() {
