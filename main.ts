@@ -21,7 +21,7 @@ export default class MyPlugin extends Plugin {
 		}
 		console.log('布局就绪')
 	}
-	
+
 	/**
 	 * 加载插件需要的资源；此处配置插件的大部分功能
 	 * 
@@ -37,7 +37,7 @@ export default class MyPlugin extends Plugin {
 		this.registerEvent(this.app.vault.on('create', this.onCreate, this));
 
 		await this.loadSettings();
-	
+
 
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
@@ -110,7 +110,94 @@ export default class MyPlugin extends Plugin {
 			// Called when the user clicks the icon.
 			new Notice('通知');
 		});
+
+
+		this.addCommand({
+			id: 'cmd-hello',
+			name: 'cmd-hi',
+			callback: () => {
+				console.log('你好，俊宝');
+			},
+		});
+
+		/**
+		 * 命令区添加操作
+		 * 
+		 * 用于“检查”您的命令是否可以在当前情况下执行。
+		 */
+		this.addCommand({
+			id: 'choose-command',
+			name: 'choose command',
+			/**
+			 * 运行checkCallback两次
+			 * 
+			 * 1.打开命令面板时，会调用一次。执行初步检查以确定命令是否可以运行 
+			 * 		checking true 执行初步检查以确定命令是否可以运行 
+			 * 2.当用户在命令面板中选择您的命令时。
+			 * 		checking false 执行真正的命令
+			 * 
+			 * @param checking 
+			 * @returns 
+			 */
+			checkCallback: (checking: boolean) => {
+				console.log('checking', checking);
+				const value = getRequiredValue();
+				if (value) {
+					if (!checking) {
+						doCommand(value);
+					}
+					return true
+				}
+				return false;
+			},
+		});
+
+		/**
+		 * 编辑器命令
+		 * 它提供活动编辑器及其视图作为参数
+		 * 
+		 * 仅当有活动编辑器可用时，编辑器命令才会出现在命令面板中。
+
+
+		 */
+		this.addCommand({
+			id: 'edit-command',
+			name: 'edit command',
+			editorCallback: (editor: Editor, view: MarkdownView) => {
+				const sel = editor.getSelection()
+				console.log(`You have selected: ${sel}`);
+			},
+		});
+
+		//编辑器条件命令
+		this.addCommand({
+			id: 'edit-choose-command',
+			name: 'edit choose command',
+			editorCheckCallback: (checking: boolean, editor: Editor, view: MarkdownView) => {
+				const value = getRequiredValue2(editor);
+				if (value) {
+					if (!checking) {
+						doCommand(value);
+					}
+					return true
+				}
+				return false;
+			},
+		});
+
+		this.addCommand({
+			id: 'hot-key-command',
+			name: 'hot key command',
+			//Mod 键是一个特殊的修饰键，在 Windows 和 Linux 上变为 Ctrl，在 macOS 上变为 Cmd
+			hotkeys: [{ modifiers: ['Mod', 'Shift'], key: 'q' }],
+			callback: () => {
+				console.log('mod shift q 你好');
+			},
+		});
+
 	}
+
+
 
 	//释放插件需要的资源；插件禁止时运行
 	onunload() {
@@ -132,12 +219,12 @@ class SampleModal extends Modal {
 	}
 
 	onOpen() {
-		const {contentEl} = this;
+		const { contentEl } = this;
 		contentEl.setText('Woah!');
 	}
 
 	onClose() {
-		const {contentEl} = this;
+		const { contentEl } = this;
 		contentEl.empty();
 	}
 }
@@ -151,7 +238,7 @@ class SampleSettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
-		const {containerEl} = this;
+		const { containerEl } = this;
 
 		containerEl.empty();
 
@@ -166,4 +253,18 @@ class SampleSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 	}
+}
+function doCommand(value: any) {
+	console.log(value);
+}
+
+function getRequiredValue(): number {
+	console.log('getRequiredValue');
+	return 10;
+}
+
+function getRequiredValue2(editor: Editor) {
+	const sel = editor.getSelection()
+	console.log(`You have selected: ${sel}`);
+	return sel;
 }
