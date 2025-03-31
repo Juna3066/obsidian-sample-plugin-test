@@ -101,7 +101,12 @@ export default class MyPlugin extends Plugin {
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 
 
-		this.addRibbonIcon('dice', '功能栏-图标标题', (evt: MouseEvent) => {
+		/**
+		 * https://lucide.dev/ 查看图标
+		 * 
+		 * 功能区添加操作  dice info 
+		 */
+		this.addRibbonIcon('circle-user-round', '功能栏-图标标题', (evt: MouseEvent) => {
 			// Called when the user clicks the icon.
 			new Notice('通知');
 		});
