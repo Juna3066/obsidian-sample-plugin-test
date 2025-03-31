@@ -1,4 +1,5 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, Menu, setIcon, addIcon, WorkspaceLeaf } from 'obsidian';
+import { moment } from 'obsidian';
 import { ExampleModal } from './modal';
 import { ExampleModal2, ExampleModal3 } from 'modal/ExampleModal2';
 import { ExampleSettingTab } from './settings';
@@ -163,8 +164,19 @@ export default class MyPlugin extends Plugin {
 			id: 'sample-editor-command',
 			name: 'Sample editor command',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
-				console.log(editor.getSelection());
-				editor.replaceSelection('Sample Editor Command');
+				const select = editor.getSelection().trim();
+				console.log(select);
+				if(select){
+					//todo 需要理解
+					editor.replaceSelection(select.toUpperCase());
+					return;
+				}		
+				/* 
+				replaceRange ()方法替换两个光标位置之间的文本。
+				如果您只指定一个位置，它会在该位置和下一个位置之间插入新文本。
+				*/		
+				editor.replaceRange(moment().format('YYYY-MM-DD') ,editor.getCursor())
+
 			}
 		});
 		// This adds a complex command that can check whether the current state of the app allows execution of the command
