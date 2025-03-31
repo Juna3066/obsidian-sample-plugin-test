@@ -1,19 +1,30 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, Menu, setIcon, addIcon } from 'obsidian';
 import { ExampleModal } from './modal';
 import { ExampleModal2, ExampleModal3 } from 'modal/ExampleModal2';
+import { ExampleSettingTab } from './settings';
+
 
 // Remember to rename these classes and interfaces!
-
+/**
+ * 向插件添加设置的主要原因是存储即使用户退出 Obsidian 后仍会保留的配置
+ * 
+ * 添加插件设置步骤1 -定义配置内容
+ * 
+ * Object.assign()复制对任何嵌套属性的引用（浅复制）。
+ * 如果您的设置对象包含嵌套属性，则需要递归复制每个嵌套属性（深复制
+ */
 interface MyPluginSettings {
 	mySetting: string;
+	dateFormat: string;
 }
-
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+const DEFAULT_SETTINGS: Partial<MyPluginSettings> = {
+	mySetting: 'default',
+	dateFormat: 'YYYY-MM-DD',
 }
 
 //Plugin类定义插件的生命周期并公开所有插件可用的操作
 export default class MyPlugin extends Plugin {
+	// 添加插件设置步骤1 -定义配置内容
 	settings: MyPluginSettings;
 
 	onCreate() {
@@ -38,8 +49,10 @@ export default class MyPlugin extends Plugin {
 
 		this.registerEvent(this.app.vault.on('create', this.onCreate, this));
 
+		// 添加插件设置步骤3 -插件加载时候 调用
 		await this.loadSettings();
-
+		this.addSettingTab(new ExampleSettingTab(this.app, this));
+  
 
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
@@ -227,7 +240,7 @@ export default class MyPlugin extends Plugin {
 			name: 'my modal 模态框',
 			callback: () => {
 				//new ExampleModal(this.app).open();
-				new ExampleModal(this.app,(result)=>{
+				new ExampleModal(this.app, (result) => {
 					new Notice(`hello,${result}`);
 				}).open();
 			},
@@ -322,11 +335,14 @@ export default class MyPlugin extends Plugin {
 		console.log('释放插件');
 	}
 
+	// 添加插件设置步骤2 -保存配置到磁盘
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}
 
+	// 添加插件设置步骤2 -从磁盘加载配置
 	async saveSettings() {
+		console.log('保存设置', this.settings);
 		await this.saveData(this.settings);
 	}
 }
@@ -387,6 +403,7 @@ class SampleSettingTab extends PluginSettingTab {
 				.onChange(async (value) => {
 					this.plugin.settings.mySetting = value;
 					console.log(this.plugin.settings.mySetting);
+					//添加插件设置步骤3 调用saveSettings
 					await this.plugin.saveSettings();
 				}));
 	}
