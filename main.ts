@@ -302,19 +302,36 @@ class SampleSettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 
+	// 插件设置页面构建： html元素
 	display(): void {
 		const { containerEl } = this;
 
 		containerEl.empty();
 
+		//在容器元素内添加标题元素
+		containerEl.createEl('h1', { text: 'Heading 1' });
+
+		//createEl()返回对新元素的引用
+		const book = containerEl.createEl('div');
+		book.createEl('div', { text: 'How to Take Smart Notes' });
+		book.createEl('small', { text: 'Sönke Ahrens' });
+
+		//为元素设置样式 1
+		const book2 = containerEl.createEl('div', { cls: 'book' });
+		book2.createEl('div', { text: 'How to Take Smart Notes', cls: 'book__title' });
+		book2.createEl('small', { text: 'Sönke Ahrens', cls: 'book__author' });
+
+		book.toggleClass('danger', this.plugin.settings.mySetting === '');
+
 		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
+			.setName('设置附件路径：')
+			.setDesc('set attachment path')
 			.addText(text => text
-				.setPlaceholder('Enter your secret')
+				.setPlaceholder('Enter your attachment path')
 				.setValue(this.plugin.settings.mySetting)
 				.onChange(async (value) => {
 					this.plugin.settings.mySetting = value;
+					console.log(this.plugin.settings.mySetting);
 					await this.plugin.saveSettings();
 				}));
 	}

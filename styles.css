@@ -6,3 +6,26 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+
+/* 为元素设置样式 2 */
+.book {
+    border: 1px solid var(--background-modifier-border);
+    padding: 10px;
+}
+
+.book__title {
+    font-weight: 600;
+}
+
+.book__author {
+    color: var(--text-muted);
+}
+
+.danger {
+    color: black;
+    background-color: aquamarine;
+
+    border: 1px solid var(--background-modifier-border);
+    padding: 10px;
+    margin-bottom: 10px;
+}
