@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, Menu, setIcon, addIcon, WorkspaceLeaf, TFile, TFolder, Vault } from 'obsidian';
+import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, Menu, setIcon, addIcon, WorkspaceLeaf, TFile, TFolder, Vault, TAbstractFile } from 'obsidian';
 import { moment } from 'obsidian';
 import { ExampleModal } from './modal';
 import { ExampleModal2, ExampleModal3 } from 'modal/ExampleModal2';
@@ -83,6 +83,12 @@ export default class MyPlugin extends Plugin {
 	 */
 	async onload() {
 		console.log('加载插件');
+
+		this.registerEvent(
+			this.app.vault.on("create", async (file: TAbstractFile) => {
+				console.log(file);
+			})
+		);
 
 		this.registerEvent(this.app.vault.on('create', () => {
 			console.log('a new file has entered the arena')
